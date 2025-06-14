@@ -1,5 +1,5 @@
 # Dockerfile
-FROM ubuntu:20.04  # Changed from 22.04 to 20.04 for better compatibility
+FROM ubuntu:20.04
 
 # Build arguments
 ARG DEVICE_TREE_URL
@@ -14,7 +14,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     software-properties-common apt-utils && \
-    add-apt-repository ppa:openjdk-r/ppa && \
+    add-apt-repository ppa:openjdk-r/ppa -y && \
     apt-get update
 
 # Main package installation

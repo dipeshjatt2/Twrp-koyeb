@@ -1,5 +1,5 @@
 # Dockerfile
-FROM ubuntu:22.04
+FROM ubuntu:20.04  # Changed from 22.04 to 20.04 for better compatibility
 
 # Build arguments
 ARG DEVICE_TREE_URL
@@ -10,24 +10,34 @@ ENV DEBIAN_FRONTEND=noninteractive \
     TZ=UTC \
     PATH="/root/bin:${PATH}"
 
-# Install all dependencies in one RUN layer
+# Install base dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+    software-properties-common apt-utils && \
+    add-apt-repository ppa:openjdk-r/ppa && \
+    apt-get update
+
+# Main package installation
+RUN apt-get install -y --no-install-recommends \
     bc bison build-essential ca-certificates curl flex g++-multilib \
     gcc-multilib git gnupg gperf imagemagick lib32ncurses-dev \
     libncurses-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils \
     lzop pngcrush rsync schedtool squashfs-tools xsltproc zip \
-    zlib1g-dev python3 android-sdk-libsparse-utils android-sdk-ext4-utils \
-    android-sdk-fsutils openjdk-11-jdk repo && \
+    zlib1g-dev python3 openjdk-11-jdk repo && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Set up working directory
-WORKDIR /build
+# Android tools (manual installation)
+RUN mkdir -p /opt/android-sdk && \
+    cd /opt/android-sdk && \
+    curl -O https://dl.google.com/android/repository/platform-tools-latest-linux.zip && \
+    unzip platform-tools-latest-linux.zip && \
+    rm platform-tools-latest-linux.zip && \
+    ln -s /opt/android-sdk/platform-tools/adb /usr/bin/adb && \
+    ln -s /opt/android-sdk/platform-tools/fastboot /usr/bin/fastboot
 
-# Copy build script
+WORKDIR /build
 COPY .koyeb/build.sh /usr/local/bin/build.sh
 RUN chmod +x /usr/local/bin/build.sh
 
-# Set default command
 CMD ["/usr/local/bin/build.sh"]

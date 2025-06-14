@@ -1,0 +1,15 @@
+version: "1"
+name: twrp-builder
+services:
+  - name: builder
+    regions: ["fra"]
+    ports:
+      - port: 8080
+        http_path: /
+    docker:
+      image: koyeb/twrp-builder
+      build:
+        dockerfile: Dockerfile
+        args:
+          - DEVICE_TREE_URL=https://github.com/dipeshjatt2/android_device_samsung_gta9p.git
+          - DEVICE_CODE=a9p

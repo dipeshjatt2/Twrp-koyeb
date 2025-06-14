@@ -3,6 +3,7 @@ name: twrp-builder
 services:
   - name: builder
     regions: ["fra"]
+    instance_type: large  # Ensure enough RAM/CPU
     ports:
       - port: 8080
         http_path: /
